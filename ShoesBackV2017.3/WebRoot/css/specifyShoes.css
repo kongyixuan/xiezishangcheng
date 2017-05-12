@@ -1,0 +1,76 @@
+ body {
+	background-color: #e6e6e6;
+}
+body,td,th {
+	font-size: 12px;
+}
+
+td
+{
+	background:url(../images/table_bg001.gif);
+	word-break:all;
+}
+
+
+.grayColor {  
+	color: #666666; 
+	font-family: "微软雅黑";
+	width:76px;
+	height:40px;
+}  
+.BrownColor {
+	color: #996666;
+	text-align:left;
+	margin-left:10px;
+	font-size: 13px;
+	vertical-align:top; 
+}
+ 
+/* 对于下拉框，需要上下留白以免显得过于拥挤*/  
+.seclecStyle{
+	margin:4px  0px;
+}
+.linput {
+	border: #ccc 2px solid; 
+	WIDTH: 200px;
+	HEIGHT: 22px;
+	COLOR: #666;
+	FONT-SIZE: 14px;
+}  
+ 
+ 
+#login_table
+{
+	width:670px;  
+	border:0;  
+	cellSpacing:0; 
+	cellPadding:0;  
+	border:0px; 
+	text-align:left; 
+}
+
+#goto_register
+{
+	font:'幼圆'; 
+	font-size:14px;
+	text-align:left;
+	width:670px;
+	margin-top:30px;
+}
+
+
+#goto_register .span
+{
+	font:'幼圆'; 
+	font-size:14px;
+	text-align:left;
+	width:670px;
+	margin-top:30px;
+	color:#999;
+}
+
+#goto_register a
+{ 
+	text-decoration:none;
+	color:#F90;
+}

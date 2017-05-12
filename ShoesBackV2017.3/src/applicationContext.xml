@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+				http://www.springframework.org/schema/aop 
+			http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+				http://www.springframework.org/schema/tx 
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"> 
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"> </property> 
+		<property name="url" value="jdbc:mysql://localhost:3306/shop"> </property> 
+		<property name="username" value="root"></property> <property name="password" 
+		value="123456"></property> </bean> -->
+	<!-- 自动扫描web包 ,将带有注解的类 纳入spring容器管理 -->    
+<context:component-scan base-package="com.shoesback"></context:component-scan> 
+	<!-- 配置c3p0数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/shoes" />
+		<property name="user" value="root"></property>
+		<property name="password" value="123456"></property>
+		<!-- 连接池中保留的最大连接数。Default: 15 -->
+		<property name="maxPoolSize" value="20" />
+		<!-- 连接池中保留的最小连接数。 -->
+		<property name="minPoolSize" value="2" />
+		<!-- 初始化时获取的连接数，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
+		<property name="initialPoolSize">
+			<value>10</value>
+		</property>
+		<!-- 最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+		<property name="maxIdleTime" value="60" />
+		<property name="idleConnectionTestPeriod" value="60">
+			<!-- 定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->
+		</property>
+		<!-- 当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->
+		<property name="acquireIncrement">
+			<value>5</value>
+		</property>
+		<!-- JDBC的标准参数，用以控制数据源内加载的PreparedStatements数量。但由于预缓存的statements 属于单个connection而不是整个连接池。所以设置这个参数需要考虑到多方面的因素。 
+			如果maxStatements与maxStatementsPerConnection均为0，则缓存被关闭。Default: 0 -->
+		<property name="maxStatements">
+			<value>0</value>
+		</property>
+		<!-- 定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->
+		<property name="acquireRetryAttempts">
+			<value>30</value>
+		</property>
+		<!-- 获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效 保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试 
+			获取连接失败后该数据源将申明已断开并永久关闭。Default: false -->
+		<property name="breakAfterAcquireFailure">
+			<value>true</value>
+		</property>
+		<!-- 因性能消耗大请只在需要的时候使用它。如果设为true那么在每个connection提交的 时候都将校验其有效性。建议使用idleConnectionTestPeriod或automaticTestTable 
+			等方法来提升连接测试的性能。Default: false -->
+		<property name="testConnectionOnCheckout">
+			<value>false</value>
+		</property>
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect
+				</prop>
+				<!--打印sql语句 -->
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+
+				<prop key="javax.persistence.validation.mode">none</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<!-- 管理映射文件 （Users.hbm.xml为例） <value>com/ssh/po/Users.hbm.xml</value> -->
+				<value>com/shoesback/po/Receives.hbm.xml</value>
+				<value>com/shoesback/po/Users.hbm.xml</value>
+				<value>com/shoesback/po/ShoesInquirys.hbm.xml</value>
+				<value>com/shoesback/po/SpcifyShoes.hbm.xml</value>
+				<value>com/shoesback/po/ShoePhotos.hbm.xml</value>
+				<value>com/shoesback/po/SecondKills.hbm.xml</value>
+				<value>com/shoesback/po/SpcifyResults.hbm.xml</value>
+				<value>com/shoesback/po/Orders.hbm.xml</value>
+				<value>com/shoesback/po/Shoes.hbm.xml</value>
+				<value>com/shoesback/po/Comments.hbm.xml</value>
+				<value>com/shoesback/po/Shoesizes.hbm.xml</value>
+				<value>com/shoesback/po/OrderShoes.hbm.xml</value>
+				<value>com/shoesback/po/Types.hbm.xml</value>
+				<value>com/shoesback/po/Sizes.hbm.xml</value>
+				<value>com/shoesback/po/SpsSizes.hbm.xml</value>
+				<value>com/shoesback/po/Brands.hbm.xml</value>
+				<value>com/shoesback/po/Admins.hbm.xml</value>
+				<value>com/shoesback/po/Permission.hbm.xml</value>
+				<value>com/shoesback/po/Percontent.hbm.xml</value>
+				<value>com/shoesback/po/Ads.hbm.xml</value>
+				<value>com/shoesback/po/EnterpriseCertification.hbm.xml</value>
+				<value>com/shoesback/po/FriendLinks.hbm.xml</value>
+			</list>
+		</property>
+
+	</bean>
+	<!-- 声明Hibernate事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- 配置事务通知 配置在哪些方法使用事务通知（通配符） -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="mod*" propagation="REQUIRED" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="set*" propagation="REQUIRED" />
+			<tx:method name="create*" propagation="REQUIRED" />
+			<tx:method name="cancle*" propagation="REQUIRED" />
+			<tx:method name="Add*" propagation="REQUIRED" />
+			<tx:method name="Del*" propagation="REQUIRED" />
+			<tx:method name="Mod*" propagation="REQUIRED" />
+			<tx:method name="Save*" propagation="REQUIRED" />
+			<tx:method name="Update*" propagation="REQUIRED" />
+			<tx:method name="Set*" propagation="REQUIRED" />
+			<tx:method name="Create*" propagation="REQUIRED" />
+			<tx:method name="Batch*" propagation="REQUIRED" />
+
+			<tx:method name="*" read-only="true" propagation="NOT_SUPPORTED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 配置切入点 对 com.ts.service包及其子包下的方法切入，通知给txAdvice -->
+	<aop:config>
+		<aop:pointcut id="txManger" expression="execution(* com.shoe.biz..*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txManger" />
+	</aop:config>
+
+	<!-- 依赖注入配置 <import resource="applicationContext-users.xml"/> -->
+	<!-- 管理员配置 -->
+	<!-- 配置dao层依赖注入 -->
+	<bean id="adminsDao" class="com.shoesback.dao.impl.AdminsDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="permissionDao" class="com.shoesback.dao.impl.PermissionDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="percontentDao" class="com.shoesback.dao.impl.PercontentDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<!-- 配置biz层依赖注入 -->
+	<bean id="adminsBiz" class="com.shoesback.biz.impl.AdminsBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="adminsDao">
+			<ref bean="adminsDao" />
+		</property>
+	</bean>
+	<bean id="permissionBiz" class="com.shoesback.biz.impl.PermissionBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="permissionDao">
+			<ref bean="permissionDao" />
+		</property>
+	</bean>
+	<bean id="percontentBiz" class="com.shoesback.biz.impl.PercontentBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="percontentDao">
+			<ref bean="percontentDao" />
+		</property>
+	</bean>
+	<!-- 配置Action依赖注入 -->
+	<bean id="adminAction" class="com.shoesback.action.AdminsAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="adminsBiz">
+			<ref bean="adminsBiz" />
+		</property>
+		<property name="permissionBiz">
+			<ref bean="permissionBiz" />
+		</property>
+		<property name="percontentBiz">
+			<ref bean="percontentBiz" />
+		</property>
+	</bean>
+	<bean id="permissionAction" class="com.shoesback.action.PermissionAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="permissionBiz">
+			<ref bean="permissionBiz" />
+		</property>
+		<property name="percontentBiz">
+			<ref bean="percontentBiz" />
+		</property>
+	</bean>
+	<!-- 用户管理 -->
+	<bean id="userDao" class="com.shoesback.dao.impl.UserDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="userBiz" class="com.shoesback.biz.impl.UserBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="userDao">
+			<ref bean="userDao" />
+		</property>
+	</bean>
+	<bean id="userAction" class="com.shoesback.action.UserAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="userBiz">
+			<ref bean="userBiz" />
+		</property>
+	</bean>
+	<!-- 鞋子配置 -->
+	<bean id="shoesDao" class="com.shoesback.dao.impl.ShoesDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="shoesizesDao" class="com.shoesback.dao.impl.ShoesizesDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="typesDao" class="com.shoesback.dao.impl.TypesDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="brandsDao" class="com.shoesback.dao.impl.BrandsDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="sizesDao" class="com.shoesback.dao.impl.SizesDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="shoesBiz" class="com.shoesback.biz.impl.ShoesBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="shoesDao">
+			<ref bean="shoesDao" />
+		</property>
+		<property name="shoesizesDao">
+			<ref bean="shoesizesDao" />
+		</property>
+	</bean>
+	<bean id="shoesizesBiz" class="com.shoesback.biz.impl.ShoesizesBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="shoesizesDao">
+			<ref bean="shoesizesDao" />
+		</property>
+	</bean>
+	<bean id="typesBiz" class="com.shoesback.biz.impl.TypesBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="typesDao">
+			<ref bean="typesDao" />
+		</property>
+	</bean>
+	<bean id="brandsBiz" class="com.shoesback.biz.impl.BrandsBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="brandsDao">
+			<ref bean="brandsDao" />
+		</property>
+	</bean>
+	<bean id="sizesBiz" class="com.shoesback.biz.impl.SizesBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sizesDao">
+			<ref bean="sizesDao" />
+		</property>
+	</bean>
+	<bean id="shoesAction" class="com.shoesback.action.ShoesAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="shoesBiz">
+			<ref bean="shoesBiz" />
+		</property>
+		<property name="sizesBiz">
+			<ref bean="sizesBiz" />
+		</property>
+		<property name="brandsBiz">
+			<ref bean="brandsBiz" />
+		</property>
+		<property name="typesBiz">
+			<ref bean="typesBiz" />
+		</property>
+		<property name="shoesizesBiz">
+			<ref bean="shoesizesBiz" />
+		</property>
+	</bean>
+	<bean id="brandsAction" class="com.shoesback.action.BrandsAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="brandsBiz">
+			<ref bean="brandsBiz" />
+		</property>
+	</bean>
+	<bean id="typesAction" class="com.shoesback.action.TypesAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="typesBiz">
+			<ref bean="typesBiz" />
+		</property>
+	</bean>
+	<!-- 定制鞋 -->
+	<bean id="spcifyShoesDao" class="com.shoesback.dao.impl.SpcifyShoesDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="spsSizesDao" class="com.shoesback.dao.impl.SpsSizesDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="spcifyShoesBiz" class="com.shoesback.biz.impl.SpcifyShoesBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="spcifyShoesDao">
+			<ref bean="spcifyShoesDao" />
+		</property>
+	</bean>
+	<bean id="spsSizesBiz" class="com.shoesback.biz.impl.SpsSizesBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="spsSizesDao">
+			<ref bean="spsSizesDao" />
+		</property>
+	</bean>
+	<bean id="spcifyShoesAction" class="com.shoesback.action.SpcifyShoesAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="spcifyShoesBiz">
+			<ref bean="spcifyShoesBiz" />
+		</property>
+		<property name="sizesBiz">
+			<ref bean="sizesBiz" />
+		</property>
+		<property name="brandsBiz">
+			<ref bean="brandsBiz" />
+		</property>
+		<property name="typesBiz">
+			<ref bean="typesBiz" />
+		</property>
+		<property name="spsSizesBiz">
+			<ref bean="spsSizesBiz" />
+		</property>
+	</bean>
+	<!-- Excel导入导出 -->
+	<bean id="downloadShoesAction" class="com.shoesback.action.DownloadShoesAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="shoesBiz">
+			<ref bean="shoesBiz" />
+		</property>
+	</bean>
+	<bean id="importShoesAction" class="com.shoesback.action.ImportShoesAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="shoesBiz">
+			<ref bean="shoesBiz" />
+		</property>
+		<property name="sizesBiz">
+			<ref bean="sizesBiz" />
+		</property>
+		<property name="brandsBiz">
+			<ref bean="brandsBiz" />
+		</property>
+		<property name="typesBiz">
+			<ref bean="typesBiz" />
+		</property>
+		<property name="shoesizesBiz">
+			<ref bean="shoesizesBiz" />
+		</property>
+	</bean>
+	<!-- 普通订单 -->
+	<bean id="ordersDao" class="com.shoesback.dao.impl.OrdersDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ordersBiz" class="com.shoesback.biz.impl.OrdersBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="ordersDao">
+			<ref bean="ordersDao" />
+		</property>
+	</bean>
+	<bean id="ordersAction" class="com.shoesback.action.OrdersAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="ordersBiz">
+			<ref bean="ordersBiz" />
+		</property>
+	</bean>
+	<!-- 定制订单 -->
+	<bean id="spcifyResultsDao" class="com.shoesback.dao.impl.SpcifyResultsDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="spcifyResultsBiz" class="com.shoesback.biz.impl.SpcifyResultsBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="spcifyResultsDao">
+			<ref bean="spcifyResultsDao" />
+		</property>
+	</bean>
+	<bean id="spcifyResultsAction" class="com.shoesback.action.SpcifyResultsAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="spcifyResultsBiz">
+			<ref bean="spcifyResultsBiz" />
+		</property>
+	</bean>
+	<!-- 评论回复配置 -->
+	<bean id="inquirysDao" class="com.shoesback.dao.impl.InquirysDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="commentsDao" class="com.shoesback.dao.impl.CommentsDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="inquirysBiz" class="com.shoesback.biz.impl.InquirysBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="inquirysDao">
+			<ref bean="inquirysDao" />
+		</property>
+	</bean>
+	<bean id="commentsBiz" class="com.shoesback.biz.impl.CommentsBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="commentsDao">
+			<ref bean="commentsDao" />
+		</property>
+	</bean>
+	<bean id="inquirysAction" class="com.shoesback.action.InquirysAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="inquirysBiz">
+			<ref bean="inquirysBiz" />
+		</property>
+	</bean>
+	<bean id="commentsAction" class="com.shoesback.action.CommentsAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="commentsBiz">
+			<ref bean="commentsBiz" />
+		</property>
+	</bean>
+	<!-- 交易报表配置 只需配置Action -->
+	<bean id="jfreeChartAction" class="com.shoesback.action.JfreeChartAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="shoesBiz">
+			<ref bean="shoesBiz" />
+		</property>
+		<property name="ordersBiz">
+			<ref bean="ordersBiz" />
+		</property>
+	</bean>
+	<!-- 广告 -->
+	<bean id="adsDao" class="com.shoesback.dao.impl.AdsDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="adsBiz" class="com.shoesback.biz.impl.AdsBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="adsDao">
+			<ref bean="adsDao" />
+		</property>
+	</bean>
+	<bean id="adsAction" class="com.shoesback.action.AdsAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="adsBiz">
+			<ref bean="adsBiz" />
+		</property>
+	</bean>
+	<!-- 企业认证-->
+	<bean id="enterpriseCertificationDao" class="com.shoesback.dao.impl.EnterpriseCertificationDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="enterpriseCertificationBiz" class="com.shoesback.biz.impl.EnterpriseCertificationBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="enterpriseCertificationDao">
+			<ref bean="enterpriseCertificationDao" />
+		</property>
+	</bean>
+	<bean id="enterpriseCertificationAction" class="com.shoesback.action.EnterpriseCertificationAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="enterpriseCertificationBiz">
+			<ref bean="enterpriseCertificationBiz" />
+		</property>
+	</bean>
+	
+	<!-- 友情链接 -->
+	<bean id="friendLinksDao" class="com.shoesback.dao.impl.FriendLinksDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="friendLinksBiz" class="com.shoesback.biz.impl.FriendLinksBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="friendLinksDao">
+			<ref bean="friendLinksDao" />
+		</property>
+	</bean>
+	<bean id="friendLinksAction" class="com.shoesback.action.FriendLinksAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="friendLinksBiz">
+			<ref bean="friendLinksBiz" />
+		</property>
+	</bean>
+	<!-- 发送邮件 -->
+	<bean id="emailAction" class="com.shoesback.action.EmailAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+	</bean>
+	<!-- 秒杀积分 -->
+	<bean id="secondKillsDao" class="com.shoesback.dao.impl.SecondKillsDaoImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="secondKillsBiz" class="com.shoesback.biz.impl.SecondKillsBizImpl"
+		abstract="false" lazy-init="default" autowire="default">
+		<property name="secondKillsDao">
+			<ref bean="secondKillsDao" />
+		</property>
+	</bean>
+	<bean id="secondKillsAction" class="com.shoesback.action.SecondKillsAction"
+		abstract="false" lazy-init="default" autowire="default" scope="prototype">
+		<property name="secondKillsBiz">
+			<ref bean="secondKillsBiz" />
+		</property>
+		<property name="shoesBiz">
+			<ref bean="shoesBiz" />
+		</property>
+	</bean>
+<import resource="spring-redis.xml"/>
+</beans>

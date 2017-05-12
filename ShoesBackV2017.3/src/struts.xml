@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+   <!-- struts由spring框架托管action -->
+   <constant name="objectFactory" value="spring"></constant>
+   <!-- <constant name="struts.multipart.saveDir" value="/tmp"/> -->
+   <!-- 配置字符集 -->
+   <constant name="struts.i18n.encoding" value="gbk"></constant>
+  <package name="actions" namespace="/" extends="struts-default">
+     <interceptors>
+       <interceptor name="checkloginInteceptor" class="com.shoesback.interceptor.CheckLoginInterceptor"></interceptor>
+     </interceptors>
+    <!--  一个action 跳转到一个action中需要 result (type)属性有两种类型设置，有两种方式：redirct和chain，这两种方式的区别就是： 
+redirect是不带值的跳转，即重定向，类似于servlet中redirect。
+也就是说，我们使用redirect方式从action1到action2中时，在action1中的request范围的值是无法传递到action2中的。
+chain方式是带值的转向，即请求分发，类似于servlet中的forward。
+使用chain方式从action1到action2的时候，在action1中的request范围的值就可以传递到action2中去的。 -->
+     <!-- 创建Action -->
+      <action name="admin" class="adminAction">
+       <!-- 添加默认拦截器 -->
+       <interceptor-ref name="defaultStack" />
+       <interceptor-ref name="checkloginInteceptor">
+          <param name="excludeMethods">execute</param>
+       </interceptor-ref>
+        <param name="pagesize">10</param>
+     	<result name="success">/admins/default.jsp</result>
+     	<result name="error">/login.jsp</result>
+     	<result name="none">/admins/adminAccount/ShowAdmins.jsp</result>
+     	<result name="input">/admins/adminAccount/ModifyAdmin.jsp</result>
+     	<result name="addadmin">/admins/adminAccount/AddAdmin.jsp</result>
+     </action>
+     <action name="permission" class="permissionAction">
+     	<param name="pagesize">10</param>
+     	<result name="success">/admins/adminAccount/ShowPermission.jsp</result>
+     	<result name="none">/admins/adminAccount/AddPermission.jsp</result>
+     	<result name="input">/admins/adminAccount/ModifyPermission.jsp</result>
+     </action>
+     <!-- 用户管理 -->
+      <action name="user" class="userAction">
+        <param name="pagesize">5</param>
+     	<result name="success">/admins/userManagement/showUsers.jsp</result>
+     	<result name="UpdateUser">/admins/userManagement/ModifyUsers.jsp</result>
+     </action>
+     <!-- 鞋子管理 -->
+       <action name="shoe" class="shoesAction">
+         <param name="pagesize">10</param>
+     	<result name="success">/admins/productManagement/ShowShoes.jsp</result>
+     	<result name="input">/admins/productManagement/ModifyShoe.jsp</result>
+     	<result name="none">/admins/productManagement/AddShoe.jsp</result>
+     </action>
+       <action name="brand" class="brandsAction">
+        <param name="pagesize">7</param>
+     	<result name="success">/admins/productManagement/ShowBrands.jsp</result>
+     	<result name="input">/admins/productManagement/ModifyBrand.jsp</result>
+     </action>
+
+     <action name="type" class="typesAction">
+        <param name="pagesize">4</param>
+     	<result name="success">/admins/productManagement/ShowTypes.jsp</result>
+     	<result name="input">/admins/productManagement/ModifyType.jsp</result>
+     </action>
+      <!-- 定制鞋 -->
+       <action name="spcify" 	class="spcifyShoesAction">
+	        <param name="pagesize">10</param>
+	     	<result name="success">/admins/productManagement/showSpshoes.jsp</result>
+	     	<result name="input">/admins/productManagement/ModifySpshoes.jsp</result>
+	     	<result name="none">/admins/productManagement/AddSpshoes.jsp</result>
+     </action>
+     <!-- 导入鞋 -->
+     <action name="import" 	class="importShoesAction">
+     	<result name="success" type="redirectAction">shoe</result>
+     </action>
+     <!-- 普通订单 -->
+      <action name="order" class="ordersAction">
+     	<param name="pagesize">4</param>
+     	<result name="success">/admins/orderManagement/showOrders.jsp</result>
+     	<result name="input">/admins/orderManagement/showOrdersDetail.jsp</result>
+     	<result name="getExp">/admins/logisticsCooperation/orderexp.jsp</result>
+     	<result name="AddExp">/admins/logisticsCooperation/expSubmit.jsp</result>
+     	<result name="ExpInfo">/admins/logisticsCooperation/mapUse.jsp</result>
+     </action>
+     <!-- 定制 -->
+      <action name="spcifyResults" 	class="spcifyResultsAction">
+        <param name="pagesize">4</param>
+     	<result name="success">/admins/orderManagement/ShowSpcifyResult.jsp</result>
+     	<result name="input">/admins/orderManagement/SpcifyResultDetail.jsp</result>
+     </action>
+     <!-- 评论回复 -->
+     <action name="inquiry"	class="inquirysAction">
+        <param name="pagesize">4</param>
+     	<result name="success">/admins/evaluationManagement/Inquiry.jsp</result>
+     	<result name="input">/admins/evaluationManagement/Response.jsp</result>
+     </action>
+
+     <action name="comment"	class="commentsAction">
+     	<param name="pagesize">4</param>
+     	<result name="success">/admins/evaluationManagement/Comments.jsp</result>
+     </action>
+     <!-- 报表 -->
+     <action name="jfreechart" 	class="jfreeChartAction">
+         <result name="success">/admins/transactionReport/show.jsp</result>
+     </action>
+     <!-- 友情链接 -->
+      <action name="friend" 	class="friendLinksAction">
+     	<param name="pagesize">4</param>
+     	<result name="success">/admins/corporateCommunications/showFlinks.jsp</result>
+     	<result name="input">/admins/corporateCommunications/addFlinks.jsp</result>
+     </action>
+    <!-- 广告 -->
+     <action name="ads" class="adsAction">
+     	<param name="pagesize">4</param>
+     	<result name="success">/admins/corporateCommunications/showAds.jsp</result>
+     </action>
+     <action name="email" class="emailAction">
+     	<result name="success">/admins/siteInformation/mailto.jsp</result>
+     </action>
+     <!-- 企业认证 -->
+     <action name="enterpriseCertification" class="enterpriseCertificationAction">
+     	<param name="pagesize">4</param>
+     	<result name="success">/admins/enterpriseCertification/showEnterpriseCertification.jsp</result>
+     </action>
+     <!-- 秒杀积分 -->
+      <action name="kill" 	class="secondKillsAction">
+        <param name="pagesize">5</param>
+        <result name="success">/admins/pointsManagement/showAllSeckill.jsp</result>
+        <result name="input">/admins/pointsManagement/pointSeckillModify.jsp</result>        
+        <result name="none">/admins/pointsManagement/pointSeckill.jsp</result>
+        <result name="AddSecondKills">/admins/pointsManagement/pointSeckillAdd.jsp</result>
+        <result name="error">/admins/pointsManagement/error.jsp</result>
+      </action>
+     
+    </package>
+     <!-- 文件下载 ,及参数配置-->
+   <package name="filedownload" extends="struts-default">
+      <interceptors>
+       <interceptor name="excelInteceptor" class="com.shoesback.interceptor.ExcelInterceptor" />
+     </interceptors>
+     <!-- 配置默认action下载名称 -->
+     <default-action-ref name="download" />
+     <action name="download" class="downloadShoesAction">
+	        <!-- 配置拦截器，导出excel -->
+	        <interceptor-ref name="defaultStack" />
+	        <interceptor-ref name="excelInteceptor" />
+	        <!-- 指明excel来源路径 -->
+	        <param name="inputPath">/upload/excel/exceptshoes.xls</param>
+	        <result name="success" type="stream">
+		        <!-- 指明excel来源类型 -->
+		        <param name="contentType">image/xls</param>
+		        <!-- 调用Action内getInputStream方法获取下载文件名称 -->
+		        <param name="inputName">inputStream</param>
+		        <!--下载文件属性-->
+		        <param name="contentDisposition">filename="exceptshoes.xls"</param>
+		        <!--限定下载文件最大值-->
+		        <param name="bufferSize">4096</param>
+	        </result>
+     </action>     
+    </package>
+</struts> 
